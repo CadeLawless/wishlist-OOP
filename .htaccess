@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteBase /wishlist1/
+
+# Redirect the root (localhost/wishlist1) to public/index.php
+RewriteRule ^$ public/index.php [QSA,L]
+
+# Redirect any other URLs to public/index.php
+RewriteRule ^(.+)$ public/index.php [QSA,L]
