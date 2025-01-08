@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Core\Model;
+use Helpers\FormField;
 
 class User extends Model
 {
@@ -54,6 +55,11 @@ class User extends Model
                 $this->dark_theme = $row["dark"] == "Yes" ? true : false;
             }
         }
+    }
+
+    public function validateUser(FormField $username, FormField $password): bool
+    {
+        return true;
     }
 }
 

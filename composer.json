@@ -11,8 +11,10 @@
     ],
     "autoload": {
         "psr-4": {
-            "Core\\": "src/core/",
-            "App\\": "src/App/"
+            "Core\\": "src/Core/",
+            "App\\": "src/App/",
+            "Helpers\\": "src/Helpers",
+            "Middleware\\": "src/Middleware"
         }
     }
 }

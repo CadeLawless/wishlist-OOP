@@ -6,6 +6,8 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Core\\' => array($baseDir . '/src/core'),
+    'Middleware\\' => array($baseDir . '/src/Middleware'),
+    'Helpers\\' => array($baseDir . '/src/Helpers'),
+    'Core\\' => array($baseDir . '/src/Core'),
     'App\\' => array($baseDir . '/src/App'),
 );

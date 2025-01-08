@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title; ?></title>
-</head>
-<body>
-    <h1><?= $title; ?></h1>
-    <p>Welcome to our application!</p>
-</body>
-</html>
+<?php require(__DIR__ . "/includes/header.php"); ?>
+<?php require(__DIR__ . "/includes/nav.php"); ?>
+
+<div id="container">
+    <div class="big-buttons-container">
+        <a class="big-button create-wish-list" href="create-wishlist.php"><?php require("/wishlist1/public/assets/images/site-images/icons/plus.php"); ?>Create Wish List</a>
+        <a class="big-button view-wish-list" href="view-wishlists.php"><?php require("/wishlist1/public/assets/images/site-images/icons/search.php"); ?>View Wish Lists</a>
+    </div>
+</div>
+
+<?php require(__DIR__ . "/includes/footer.php"); ?>
