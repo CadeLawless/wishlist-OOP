@@ -8,26 +8,27 @@ class FormField
     public array $errorList = [];
     public function __construct(
         FormValidation $formValidation,
-        protected string $name,
-        protected string $type,
-        protected bool $required,
-        protected string $label,
-        protected string $value = "",
-        protected array $options = [],
-        protected string $pattern = "",
-        protected string $patternMessage = "",
-        protected array $radioValues = [],
-        protected string $radioDirection = "row",
-        protected string $size = "large"
+        public string $name,
+        public string $type,
+        public bool $required,
+        public string $label = '',
+        public string $value = "",
+        public array $options = [],
+        public string $pattern = "",
+        public string $patternMessage = "",
+        public array $radioValues = [],
+        public string $radioDirection = "row",
+        public string $size = "large",
+        public string $autoCapitalize = ""
     ){
         $formValidation->add($this);
     }
 
-    public function printFormField(): void
+    public function printFormField(bool $inputOnly = false): void
     {
-        echo "
-        <div class='$this->size-input'>";
-            if(!in_array($this->type, ["checkbox", "radio"])){
+        if(!$inputOnly)
+            echo "<div class='$this->size-input'>";
+            if(!in_array($this->type, ["checkbox", "radio", "hidden"])){
                 echo "
                 <label for='$this->name'>$this->label:";
                 if($this->required) echo " <span class='required-field'>*</span>";
@@ -42,7 +43,7 @@ class FormField
                 case "url":
                 case "email":
                 case "search":
-                    echo "<input type='$this->type' id='$this->name' name='$this->name' value='" . htmlspecialchars($this->value) . "'";
+                    echo "<input type='$this->type' id='$this->name' name='$this->name' value='" . htmlspecialchars($this->value) . "' autocapitalize='" . htmlspecialchars($this->autoCapitalize) . "'";
                     if($this->type == "date") echo " max='9999-12-31'";
                     if($this->pattern != "") echo " pattern='$this->pattern'";
                     if($this->required) echo " required";
@@ -97,7 +98,7 @@ class FormField
                     }
                     break;
             }
-        echo "</div>";
+        if(!$inputOnly) echo "</div>";
     }
 
     public function setErrors(bool $value=true, string $message=''): void

@@ -8,8 +8,8 @@ use Helpers\FormField;
 class User extends Model
 {
     protected string $table = 'wishlist_users';
-    protected string $username, $fullname, $name, $email;
-    protected bool $admin, $email_verified, $dark_theme;
+    public string $username, $fullname, $name, $email;
+    public bool $admin, $email_verified, $dark_theme;
 
     public function checkIfLoggedIn(): bool
     {
@@ -43,7 +43,7 @@ class User extends Model
         $username = $_SESSION["username"] ?? "";
 
         // find name based off of username
-        $findUserInfo = $this->select("SELECT name, role, email, unverified_email, dark FROM wishlist_users WHERE username = ?", [$username]);
+        $findUserInfo = $this->select("SELECT name, role, email, unverified_email, dark FROM $this->table WHERE username = ?", [$username]);
         if(count($findUserInfo) > 0){
             foreach($findUserInfo as $row){
                 $this->name = htmlspecialchars($row["name"]);
@@ -59,7 +59,70 @@ class User extends Model
 
     public function validateUser(FormField $username, FormField $password): bool
     {
-        return true;
+        $findUser = $this->select("SELECT username, password FROM $this->table WHERE username = ? OR email = ?", [$username->value, $username->value]);
+
+        if(count($findUser) > 0){
+            foreach($findUser as $row){
+                $hashed_password = $row["password"];
+                $username = $row["username"];
+                return password_verify($password->value, $hashed_password);
+            }
+        }else{
+            return false;
+        }
+        return false;
+    }
+
+    public function setRememberMeSession(FormField $username, FormField $rememberMe): bool
+    {
+        if($rememberMe->value == "Yes"){
+            $expire_date = date("Y-m-d H:i:s", strtotime("+1 year"));
+            $sql = "UPDATE $this->table SET session = ?, session_expiration = ? WHERE username = ?";
+            $values = [session_id(), $expire_date, $username->value];
+        }else{
+            $sql = "UPDATE $this->table SET session = NULL, session_expiration = NULL WHERE username = ?";
+            $values = [$username->value];
+        }
+        if($this->write($sql, $values)){
+            if($rememberMe->value == "Yes"){
+                $cookie_time = (3600 * 24 * 365); // 1 year
+                setcookie("wishlist_session_id", session_id(), time() + $cookie_time);
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function changeTheme(): void
+    {
+        header('Content-Type: application/json'); // Set header for JSON response
+
+        $response = ['status' => 'error', 'message' => 'Unknown error'];
+
+        if (isset($_SESSION["username"])) {
+            $username = $_SESSION["username"];
+            
+            if (isset($_POST["dark"])) {
+                // Update the dark mode setting in the database
+                $this->write("UPDATE wishlist_users SET dark = ? WHERE username = ?", [$_POST["dark"], $username]);
+
+                // Successful update
+                $response = [
+                    'status' => 'success',
+                    'message' => 'Theme updated successfully',
+                    'dark' => $_POST["dark"] // Include the updated dark mode status
+                ];
+            } else {
+                $response['message'] = 'No dark mode setting provided';
+            }
+        } else {
+            $response['message'] = 'User not logged in';
+        }
+
+        // Return the JSON response
+        echo json_encode($response);
+
     }
 }
 

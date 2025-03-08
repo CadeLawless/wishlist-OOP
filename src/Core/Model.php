@@ -17,7 +17,7 @@ abstract class Model
         }
     }
 
-    public function select(string $query, array $values): array
+    public function select(string $query, array $values=[]): array
     {
         if($selectStatement = $this->db->prepare($query)){
             $selectStatement->execute($values);
@@ -40,6 +40,10 @@ abstract class Model
         }else{
             return false;
         }
+    }
+
+    public function getLastInsertID(): int{
+        return $this->db->insert_id;
     }
 }
 

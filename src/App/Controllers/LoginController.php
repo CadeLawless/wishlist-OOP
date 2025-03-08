@@ -9,41 +9,62 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
-    public function index(): void
+    private formValidation $formValidation;
+    private FormField $username;
+    private FormField $password;
+    private FormField $rememberMe;
+
+    public function __construct(User|null $user)
     {
-        $formValidation = new FormValidation();
-        $username = new FormField(
-            formValidation: $formValidation,
+        parent::__construct($user);
+        $this->formValidation = new FormValidation();
+        $this->username = new FormField(
+            formValidation: $this->formValidation,
             name: "username",
             type: "text",
             required: true,
             label: "Username or Email"
         );
-        $password = new FormField(
-            formValidation: $formValidation,
+        $this->password = new FormField(
+            formValidation: $this->formValidation,
             name: "password",
             type: "password",
             required: true,
             label: "Password"
         );
-        $rememberMe = new FormField(
-            formValidation: $formValidation,
+        $this->rememberMe = new FormField(
+            formValidation: $this->formValidation,
             name: "remember_me",
             type: "checkbox",
             required: false,
             label:"Remember Me"
         );
+    }
 
-        if(isset($_POST["login_submit"])){
-            $formValidation->validateFormFields();
+    public function showForm(): void
+    {
+        $this->view('login', ['title' => 'Wish List | Login', 'formValidation' => $this->formValidation]);
+    }
+
+    public function handleForm(): void
+    {
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $this->formValidation->validateFormFields();
 
             $user = new User();
-            if($user->validateUser(username: $username, password: $password)){
-                
+            if($user->validateUser(username: $this->username, password: $this->password)){
+                if($user->setRememberMeSession(username: $this->username, rememberMe: $this->rememberMe)){
+                    $_SESSION["wishlist_logged_in"] = true;
+                    $_SESSION["username"] = $this->username->value;
+                    header('Location: /wishlist1/');
+                }else{
+                    $this->rememberMe->setErrors(message: "Something went wrong while trying to log you in");
+                }
+            }else{
+                $this->username->setErrors(message: "Username/email or password is incorrect");
             }
+            $this->showForm();
         }
-
-        $this->view('login', ['title' => 'Wish List | Login', 'formValidation' => $formValidation]);
     }
 }
 

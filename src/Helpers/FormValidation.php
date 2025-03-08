@@ -8,12 +8,21 @@ class FormValidation
     private string $errorList = "";
 
     public function __construct(
-        private string $errorMessageTitle = "The form couldn not be submitted due to the following errors:"
+        private string $errorMessageTitle = "The form could not be submitted due to the following errors:"
     ){}
 
     public function add(FormField $field): void
     {
         $this->formFields[] = $field;
+    }
+
+    public function getExtractableFormFields(): array
+    {
+        $values = [];
+        foreach($this->formFields as $field){
+            $values[$field->name] = $field;
+        }
+        return $values;
     }
 
     public function printFormFields(): void
@@ -71,6 +80,14 @@ class FormValidation
                 <p>Please fix the error above and resubmit.</p>
             </div>";
         }
+    }
+
+    public function printSubmitButton(string $name = 'submit_button', string $id = 'submitButton', string $value = 'Submit'): void
+    {
+        echo "
+        <div class='large-input'>
+            <p class='center'><input type='submit' class='button text' name='$name' id='$id' value='$value' /></p>
+        </div>";
     }
 }
 

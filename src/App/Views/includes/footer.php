@@ -14,13 +14,23 @@
 
       $dark = $(document.body).hasClass("dark") ? "Yes" : "No";
       $.ajax({
-            type: "POST",
-            url: "includes/ajax/dark-change.php",
-            data: {
-                dark: $dark,
-            },
-            success: function(html) {}
-        });
+        type: "POST",
+        url: "/wishlist1/change-theme",
+        data: {
+            dark: $dark,
+        },
+        dataType: "json",  // Make sure you expect a JSON response
+        success: function(response) {
+            if (response.status === 'success') {
+                console.log("Theme updated:", response.dark);
+            } else {
+                console.error("Error:", response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", error);
+        }
+      });
     });
   });
 </script>

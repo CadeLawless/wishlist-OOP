@@ -8,7 +8,7 @@ class HomeController extends Controller
 {
     public function index(): void
     {
-        $this->view('home', ['title' => 'Welcome to Our Website']);
+        $this->view('home', ['title' => 'Wish List | Home']);
     }
 }
 
